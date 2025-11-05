@@ -1,0 +1,7 @@
+backpack
+jacket
+laptop
+lifering
+mobilephone
+person
+water bottle
