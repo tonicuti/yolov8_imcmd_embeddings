@@ -14,7 +14,17 @@ import numpy as np
 from sahi import AutoDetectionModel
 from sahi.predict import get_sliced_prediction
 
-YOLO_DIR = r"C:\ZaloAI2025\observing\train\yoloV8"   
+USE_GPU = torch.cuda.is_available()
+DEVICE = "cuda:0" if USE_GPU else "cpu"
+if USE_GPU:
+    torch.backends.cudnn.benchmark = True
+    try:
+        torch.set_float32_matmul_precision("high")
+    except Exception:
+        pass
+print(f"[INFO] Device = {DEVICE}")
+
+YOLO_DIR = r"C:\ZaloAI2025\observing\train\yoloV8_"   
 
 if YOLO_DIR not in sys.path:
     sys.path.insert(0, YOLO_DIR)
@@ -39,10 +49,10 @@ except Exception:
     IN_COLAB = False
 
 SAVE_VIDEO = False 
-SHOW_VIDEO = False
+SHOW_VIDEO = True
 
 # ========== Ultralyitcs setup ==========
-IMCMD_DIR = Path(r"C:\ZaloAI2025\observing\train\yoloV8\yolo_imcmd")
+IMCMD_DIR = Path(r"C:\ZaloAI2025\observing\train\yolov8_\yolo_imcmd")
 sys.path.insert(0, str(IMCMD_DIR.parent))
 
 from yolo_imcmd import modules as immods
@@ -105,7 +115,7 @@ model = AutoDetectionModel.from_pretrained(
     model_type="yolov8",
     model_path=rf"{IMCMD_DIR}\best.pt",    
     confidence_threshold=detection_threshold,
-    device="cuda:0",
+    device=DEVICE,
     image_size=640
 )
 
